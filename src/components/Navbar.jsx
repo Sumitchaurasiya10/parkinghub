@@ -1,14 +1,13 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
-
-  // Read user from localStorage
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    logout();
     navigate("/login");
   };
 
@@ -20,7 +19,7 @@ const Navbar = () => {
       </Link>
 
       {/* Links */}
-      <div className="space-x-6">
+      <div className="space-x-6 flex items-center">
         <Link to="/" className="text-gray-700 hover:text-blue-600">Home</Link>
         <Link to="/parking" className="text-gray-700 hover:text-blue-600">Find Parking</Link>
 
@@ -38,8 +37,26 @@ const Navbar = () => {
           </>
         ) : (
           <>
+            {user.role === 'user' && (
+              <Link to="/my-bookings" className="text-gray-700 hover:text-blue-600">
+                My Bookings
+              </Link>
+            )}
+            
+            {user.role === 'owner' && (
+              <Link to="/owner" className="text-gray-700 hover:text-blue-600">
+                Owner Dashboard
+              </Link>
+            )}
+            
+            {user.role === 'admin' && (
+              <Link to="/admin" className="text-gray-700 hover:text-blue-600">
+                Admin Dashboard
+              </Link>
+            )}
+
             <span className="text-gray-700 font-semibold">
-              👋 Welcome, {user.name}
+              👋 {user.name} ({user.role})
             </span>
             <button
               onClick={handleLogout}
